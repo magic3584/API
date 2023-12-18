@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toggle Flashlight</title>
+</head>
+<body>
+    <button onclick="toggleFlashlight()">Toggle Flashlight</button>
+
+    <script>
+        async function toggleFlashlight() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                const track = stream.getVideoTracks()[0];
+                const capabilities = track.getCapabilities();
+
+                if (!capabilities.torch || !capabilities.torch.supported) {
+                    console.error('Torch not supported on this device');
+                    return;
+                }
+
+                const mode = track.getSettings().torch ? 'off' : 'on';
+                await track.applyConstraints({ advanced: [{ torch: mode }] });
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+            }
+        }
+    </script>
+</body>
+</html>
